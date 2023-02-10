@@ -1,19 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-from typing import List, Optional
+from typing import List, Optional, Union
 from torch import Tensor
 from logging import Logger
 
 from iamrobot.model.captcha_model import CaptchaModel
 
 
-def visualize(imgs: List[Tensor], labels: List[str]):
-
+def visualize(imgs: Union[List[Tensor], Tensor], labels: List[str]):
     h = len(imgs) // 2 + len(imgs) % 2
     w = 2
     spb = f"{2}{h}"
-    fig = plt.figure(figsize=(h*2, w*2), dpi=100)
+    fig = plt.figure(figsize=(h * 2, w * 2), dpi=100)
 
     for ind, sample in enumerate(zip(imgs, labels)):
         img, label = sample
@@ -32,7 +31,12 @@ def show_example(model: CaptchaModel, test_img: Tensor):
     visualize(test_img.cpu(), pred_labels)
 
 
-def show_text_example(model: CaptchaModel, test_img: Tensor, test_labels: List[str], logger: Optional[Logger] = None) -> None:
+def show_text_example(
+    model: CaptchaModel,
+    test_img: Tensor,
+    test_labels: List[str],
+    logger: Optional[Logger] = None,
+) -> None:
     pred_labels = model.decode_out(model(test_img))
     ans = []
     for pl, l in zip(pred_labels, test_labels):
@@ -43,4 +47,3 @@ def show_text_example(model: CaptchaModel, test_img: Tensor, test_labels: List[s
         sys.stdout.write("\n")
     else:
         logger.info(res)
-    

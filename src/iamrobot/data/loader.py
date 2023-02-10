@@ -22,7 +22,7 @@ def create_train_test_loader(
     Args:
         path (Union[str, Path]): path to data.
         transforms (Any): Transforms for datasets.
-        train_bs (int): train batch size. 
+        train_bs (int): train batch size.
         test_bs (int): test batch size.
         test_size (float): size of test part.
         seed (int, optional): Defaults to 42.
@@ -36,7 +36,9 @@ def create_train_test_loader(
     all_names = os.listdir(path)
 
     train_names, test_names = train_test_split(
-        all_names, test_size=test_size, random_state=seed,
+        all_names,
+        test_size=test_size,
+        random_state=seed,
     )
 
     train_dataset = CaptchaDataset(

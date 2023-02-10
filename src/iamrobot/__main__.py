@@ -48,7 +48,7 @@ def main():
     id_to_ch, ch_to_id = create_alphabet(DATA)
 
     trainloader, testloader = create_train_test_loader(
-        DATA, 
+        DATA,
         simple_transform(),
         test_size=train_params.test_size,
         train_bs=train_params.train_batch_size,

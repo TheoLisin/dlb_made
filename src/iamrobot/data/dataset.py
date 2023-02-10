@@ -10,18 +10,19 @@ class CaptchaDataset(Dataset):
     """Captcha dataset."""
 
     def __init__(
-        self, 
-        root_dir: Union[Path, str], 
+        self,
+        root_dir: Union[Path, str],
         names: Optional[List[str]] = None,
-        encode_dct: Dict[str, str] = None, 
-        transform = None, 
-        use_cache: bool = False):
+        encode_dct: Optional[Dict[str, str]] = None,
+        transform=None,
+        use_cache: bool = False,
+    ):
         """Dataset class for captcha data.
 
         Args:
             root_dir (Union[Path, str]): Directory with all the images.
-            names (Optional[List[str]], optional):  
-                full names (with format) of files to use. 
+            names (Optional[List[str]], optional):
+                full names (with format) of files to use.
                 If None all images from root_dir will be used. Defaults to None.
             encode_dct (Dict[str, str], optional): dict to encode name for CTC loss. Defaults to None.
             transform (_type_, optional): Optional transform to be applied
@@ -40,12 +41,11 @@ class CaptchaDataset(Dataset):
                     self.names.append(name)
         else:
             self.names = names
-        
+
         if use_cache:
             self.data = self._load_data()
         else:
             self.data = None
-            
 
     def __len__(self):
         return len(self.names)
@@ -55,15 +55,15 @@ class CaptchaDataset(Dataset):
             idx = idx.tolist()
 
         if self.data is not None:
-            img = self.data[idx]['img']
-            name = self.data[idx]['name']
-            enc_name = self.data[idx]['enc_name']
+            img = self.data[idx]["img"]
+            name = self.data[idx]["name"]
+            enc_name = self.data[idx]["enc_name"]
         else:
             name = self.names[idx]
             path = self.root_dir / name
             img = cv2.imread(str(path))
-            name = name.split('.')[0]
-            enc_name = self._encode(name.split('.')[0])
+            name = name.split(".")[0]
+            enc_name = self._encode(name.split(".")[0])
 
         if self.transform:
             img = self.transform(img)
@@ -75,13 +75,14 @@ class CaptchaDataset(Dataset):
         for name in self.names:
             path = self.root_dir / name
             sample = {
-                'img': cv2.imread(str(path)),
-                'name': name.split('.')[0],
-                'enc_name': self._encode(name.split('.')[0])}
+                "img": cv2.imread(str(path)),
+                "name": name.split(".")[0],
+                "enc_name": self._encode(name.split(".")[0]),
+            }
             data.append(sample)
-        
+
         return data
-    
+
     def _encode(self, name: str):
         if self.encode_dct is None:
             return name

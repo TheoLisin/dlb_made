@@ -1,8 +1,7 @@
 import typing as tp
-import numpy as np
 
 from logging import getLogger
-from torch import nn, no_grad, Tensor, device as Device
+from torch import nn, no_grad, device as Device
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from torchmetrics.functional import char_error_rate
@@ -41,7 +40,7 @@ def train(
     for ep in range(1, epochs + 1):
         total_batches = 0
         total_loss = 0
-        cer = 0
+        cer: tp.Union[int, float] = 0
 
         model.train()
 
@@ -69,10 +68,12 @@ def train(
             cer += char_error_rate(
                 model.decode_out(logprobs),
                 labels,
-            )
+            ).item()
 
         train_loss_history.append(total_loss / total_batches)
-        logger.info(f"Train Epoch {ep} | Mean batch loss: {total_loss / total_batches} | Mean CER: {cer / total_batches}")
+        logger.info(
+            f"Train Epoch {ep} | Mean batch loss: {total_loss / total_batches} | Mean CER: {cer / total_batches}"
+        )
 
         model.eval()
         with no_grad():
@@ -100,12 +101,14 @@ def train(
                 cer += char_error_rate(
                     model.decode_out(logprobs),
                     labels,
-                )
-        
+                ).item()
+
             test_loss_history.append(total_loss / total_batches)
-            logger.info(f"Test Epoch {ep} | Mean batch loss: {total_loss / total_batches} | Mean CER: {cer / total_batches}")
+            logger.info(
+                f"Test Epoch {ep} | Mean batch loss: {total_loss / total_batches} | Mean CER: {cer / total_batches}"
+            )
 
         if ep % verbose_ep == 0:
             show_text_example(model, test_img.to(device), test_labels, logger)
-        
+
     return train_loss_history, test_loss_history
